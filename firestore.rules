@@ -1,0 +1,112 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 1. Helper Primitives
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && (request.auth.token.email_verified == true || request.auth.token.firebase.sign_in_provider == 'google.com');
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'jagdishsolunke02@gmail.com' ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('role', 'student') == 'admin'
+      );
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // 2. Entity Validations
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email']) &&
+             data.uid is string && data.uid.size() <= 128 &&
+             data.email is string && data.email.size() <= 256;
+    }
+
+    function isValidExam(data) {
+      return data.keys().hasAll(['title', 'creatorId']) &&
+             data.title is string && data.title.size() <= 200 &&
+             data.creatorId == request.auth.uid;
+    }
+
+    function isValidIncident(data) {
+      return data.keys().hasAll(['examId', 'studentId', 'timestamp', 'type', 'severity', 'status']) &&
+             data.examId is string && data.examId.size() <= 128 &&
+             data.studentId == request.auth.uid &&
+             data.severity in ['MINIMAL', 'MODERATE', 'CRITICAL'] &&
+             data.type is string && data.type.size() <= 100 &&
+             data.status in ['review', 'cleared', 'flagged'];
+    }
+
+    function isValidSession(data) {
+      return data.keys().hasAll(['examId', 'studentId', 'startTime', 'endTime', 'institution']) &&
+             data.examId is string &&
+             data.studentId == request.auth.uid &&
+             data.startTime is string &&
+             data.endTime is string;
+    }
+
+    // 3. Collection Rules
+    
+    // Users
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isOwner(userId) && isValidUser(incoming()) && (
+                      incoming().get('role', 'student') == 'student' || 
+                      request.auth.token.email == 'jagdishsolunke02@gmail.com'
+                    );
+      allow update: if (isOwner(userId) || isAdmin()) && isValidUser(incoming()) &&
+                    (incoming().get('role', 'student') == existing().get('role', 'student') || isAdmin());
+    }
+
+    // Exams
+    match /exams/{examId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if isSignedIn() && isValidExam(incoming());
+      allow update: if (existing().creatorId == request.auth.uid || isAdmin()) && isValidExam(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Incidents
+    match /incidents/{incidentId} {
+      allow get: if isSignedIn() && (resource.data.studentId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && (resource.data.studentId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && isValidIncident(incoming());
+      allow update, delete: if isAdmin();
+    }
+
+    // Sessions
+    match /sessions/{sessionId} {
+      allow get: if isSignedIn() && (resource.data.studentId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && (resource.data.studentId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && isValidSession(incoming());
+      allow update, delete: if isAdmin();
+    }
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["student", "instructor"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Exam": {
+      "title": "Exam",
+      "description": "Exam configuration and source",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "institution": { "type": "string" },
+        "startTime": { "type": "string", "format": "date-time" },
+        "gazeSensitivity": { "type": "number" },
+        "noiseThreshold": { "type": "number" },
+        "objectStrictness": { "type": "number" },
+        "sourceType": { "type": "string", "enum": ["file", "link", "none"] },
+        "examLink": { "type": "string" },
+        "fileName": { "type": "string" },
+        "creatorId": { "type": "string" },
+        "creatorEmail": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "creatorId"]
+    },
+    "Incident": {
+      "title": "Incident",
+      "description": "Detected proctoring violations",
+      "type": "object",
+      "properties": {
+        "examId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "studentEmail": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "type": { "type": "string" },
+        "description": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "confidence": { "type": "number" },
+        "severity": { "type": "string", "enum": ["MINIMAL", "MODERATE", "CRITICAL"] }
+      },
+      "required": ["examId", "studentId", "timestamp", "type", "severity"]
+    },
+    "Session": {
+      "title": "Session",
+      "description": "Completed exam sessions",
+      "type": "object",
+      "properties": {
+        "examId": { "type": "string" },
+        "examTitle": { "type": "string" },
+        "studentId": { "type": "string" },
+        "studentEmail": { "type": "string" },
+        "startTime": { "type": "string", "format": "date-time" },
+        "endTime": { "type": "string", "format": "date-time" },
+        "durationSeconds": { "type": "number" },
+        "violations": { "type": "number" },
+        "score": { "type": "number" },
+        "totalQuestions": { "type": "number" },
+        "institution": { "type": "string" }
+      },
+      "required": ["examId", "studentId", "startTime", "endTime"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/exams/{examId}": {
+      "schema": "Exam",
+      "description": "Exam definitions"
+    },
+    "/incidents/{incidentId}": {
+      "schema": "Incident",
+      "description": "Violation logs"
+    },
+    "/sessions/{sessionId}": {
+      "schema": "Session",
+      "description": "Completed sessions"
+    }
+  }
+}

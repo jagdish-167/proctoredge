@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700..800&family=Hanken+Grotesk:wght@400;700&family=Space+Grotesk:wght@500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-background: #111125;
+  --color-surface: #111125;
+  --color-surface-dim: #111125;
+  --color-surface-bright: #37374d;
+  --color-surface-container-lowest: #0c0c1f;
+  --color-surface-container-low: #1a1a2e;
+  --color-surface-container: #1e1e32;
+  --color-surface-container-high: #28283d;
+  --color-surface-container-highest: #333348;
+  --color-on-surface: #e2e0fc;
+  --color-on-surface-variant: #c7c4d8;
+  --color-inverse-surface: #e2e0fc;
+  --color-inverse-on-surface: #2f2e43;
+  --color-outline: #918fa1;
+  --color-outline-variant: #464555;
+  --color-surface-tint: #c3c0ff;
+  --color-primary: #c3c0ff;
+  --color-on-primary: #1d00a5;
+  --color-primary-container: #635bff;
+  --color-on-primary-container: #fefaff;
+  --color-inverse-primary: #4c42e9;
+  --color-secondary: #fbd12d;
+  --color-on-secondary: #3b2f00;
+  --color-secondary-container: #dcb500;
+  --color-on-secondary-container: #594700;
+  --color-tertiary: #fbb3c1;
+  --color-on-tertiary: #50212d;
+  --color-tertiary-container: #9f6370;
+  --color-on-tertiary-container: #fffaff;
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+  --color-primary-fixed: #e2dfff;
+  --color-primary-fixed-dim: #c3c0ff;
+  --color-on-primary-fixed: #0f0069;
+  --color-on-primary-fixed-variant: #321ed2;
+  --color-secondary-fixed: #ffe07d;
+  --color-secondary-fixed-dim: #ebc31a;
+  --color-on-secondary-fixed: #231b00;
+  --color-on-secondary-fixed-variant: #564500;
+  --color-tertiary-fixed: #ffd9df;
+  --color-tertiary-fixed-dim: #fbb3c1;
+  --color-on-tertiary-fixed: #360c19;
+  --color-on-tertiary-fixed-variant: #6b3743;
+  --color-on-background: #e2e0fc;
+  --color-surface-variant: #333348;
+
+  --font-display: "Bricolage Grotesque", sans-serif;
+  --font-headline: "Bricolage Grotesque", sans-serif;
+  --font-body: "Hanken Grotesk", sans-serif;
+  --font-data: "Space Grotesk", sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-on-background font-body;
+  }
+}
+
+@layer components {
+  .brutal-border {
+    border-width: 3px;
+    border-color: black;
+  }
+  .brutal-shadow {
+    box-shadow: 4px 4px 0px #000;
+  }
+  .brutal-shadow-lg {
+    box-shadow: 8px 8px 0px #000;
+  }
+  .brutal-shadow-sm {
+    box-shadow: 2px 2px 0px #000;
+  }
+  .brutal-card {
+    @apply bg-surface-container-low rounded-xl p-6;
+    border-width: 3px;
+    border-color: black;
+    box-shadow: 4px 4px 0px #000;
+  }
+  .brutal-btn-primary {
+    @apply bg-secondary text-on-secondary font-bold px-6 py-3 transition-all active:scale-95;
+    border-width: 3px;
+    border-color: black;
+    box-shadow: 4px 4px 0px #000;
+  }
+  .brutal-btn-primary:hover {
+    transform: translate(4px, 4px);
+    box-shadow: none;
+  }
+  .brutal-btn-secondary {
+    @apply bg-surface-container text-on-surface font-bold px-6 py-3 transition-all;
+    border-width: 3px;
+    border-color: black;
+  }
+  .brutal-btn-secondary:hover {
+    @apply bg-surface-variant;
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 25%, rgba(195, 192, 255, 0.1) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite linear;
+}

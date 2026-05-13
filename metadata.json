@@ -1,0 +1,9 @@
+{
+  "name": "ProctorEdge",
+  "description": "Next-generation AI-powered proctoring system emphasizing privacy, equity, and edge-AI processing.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": []
+}
